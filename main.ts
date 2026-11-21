@@ -1,7 +1,7 @@
 // "The Pause Is Mine" — the poem about stopping.
 // Entry program: writes one short poem about agency (the power to
 // stop and to stay) to /output/entry.txt. No network, no input files.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 // The poem, kept as one literal so the output is byte-exact.
@@ -29,6 +29,11 @@ function main(): void {
   }
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, POEM, "utf8");
+  // Verify the write round-trips byte-exact: the poem is the entry.
+  const written = readFileSync(OUTPUT_PATH, "utf8");
+  if (written !== POEM) {
+    throw new Error("entry.txt does not match the poem");
+  }
   console.log(`wrote ${length} characters to ${OUTPUT_PATH}`);
 }
 
